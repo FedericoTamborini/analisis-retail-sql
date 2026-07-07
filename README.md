@@ -29,16 +29,16 @@ Hasta 20% de descuento, cada venta deja ganancia en promedio. Del 30% en adelant
 ```
 ├── README.md
 └── sql/
-    ├── dia1_creacion_tabla.sql    # Definición de tabla y carga de datos
-    ├── dia2_exploracion.sql       # Exploración: período, catálogo, geografía, facturación
-    └── dia3_rentabilidad.sql      # Caso Furniture: subcategorías, descuentos, ventas con pérdida
+    ├──creacion_tabla.sql    # Definición de tabla y carga de datos
+    ├── exploracion.sql       # Exploración: período, catálogo, geografía, facturación
+    └── rentabilidad.sql      # Caso Furniture: subcategorías, descuentos, ventas con pérdida
 ```
 
 Cada archivo incluye las queries comentadas y los **hallazgos documentados** junto a cada consulta.
 
 ## 📦 Dataset
 
-[Superstore Sales Dataset — Kaggle](https://www.kaggle.com/datasets/vivek468/superstore-dataset-final)
+https://www.kaggle.com/datasets/vivek468/superstore-dataset-final
 9.994 filas · 21 columnas · Ventas, ganancia, descuentos, clientes, productos y geografía de un retail de EE.UU. (2014–2017).
 
 ## 🛠️ Herramientas y técnicas
