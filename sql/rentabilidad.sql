@@ -1,5 +1,4 @@
 -- Sospechas dentro de Furniture
-
 SELECT sub_category,
 	SUM(sales) AS ventas, 
 	SUM(profit) AS ganancia,
