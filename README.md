@@ -58,4 +58,4 @@ https://www.kaggle.com/datasets/vivek468/superstore-dataset-final
 
 ---
 
-*Proyecto en desarrollo — cada avance se documenta en [mi LinkedIn] https://www.linkedin.com/in/federico-tamborini-014413220/ .*
+*Proyecto en desarrollo — cada avance se documenta en [mi LinkedIn](https://www.linkedin.com/in/federico-tamborini-014413220/).*
