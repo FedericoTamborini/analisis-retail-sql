@@ -1,0 +1,88 @@
+-- Consigna: Mapa de perdidas.
+
+SELECT region,
+	COUNT (*) AS ventas_totales,
+	SUM(profit) AS perdidas_totales
+FROM ventas_raw
+WHERE profit < 0
+GROUP BY region
+ORDER BY perdidas_totales;
+
+-- Zoom de region x subcategoria (detalle)
+SELECT region,
+	sub_category,
+	COUNT (*) AS ventas_totales,
+	SUM(profit) AS perdidas_totales
+FROM ventas_raw
+WHERE profit < 0
+GROUP BY region, sub_category
+ORDER BY perdidas_totales;
+
+-- Hallazgo: La pérdida está concentrada geográficamente: Central
+-- (-$56.3K en 741 ventas) y East (-$49.6K en 553) acumulan dos tercios
+-- de la pérdida total de la empresa; South y West pierden menos de
+-- la mitad que Central cada una.
+-- El zoom por subcategoría muestra que casi el 40% de la pérdida de
+-- Central es solo Binders (-$21.9K en 233 ventas), y en East destaca
+-- Machines: -$13.9K en apenas 15 ventas (~$930 perdidos por venta).
+-- Pendiente: identificar si estas pérdidas se concentran también en
+-- pocos clientes, o están repartidas.
+
+-- Consigna 2: Clientes
+
+SELECT customer_id,
+	customer_name,
+	COUNT (*) AS ventas_totales,
+	SUM(profit) AS perdidas_totales
+FROM ventas_raw
+WHERE profit < 0
+GROUP BY customer_id, customer_name
+ORDER BY perdidas_totales ASC
+LIMIT 10;
+
+--Consigna 3: Peores ventas.
+
+SELECT customer_id AS id_cliente,
+	customer_name AS nombre_cliente,
+	product_name AS nombre_producto,
+	sub_category,
+	region,
+	sales AS ventas,
+	discount AS descuento,
+	profit AS perdidas
+FROM ventas_raw
+WHERE profit < 0
+ORDER BY perdidas ASC
+LIMIT 10;
+
+-- Hallazgo (Consignas 2 y 3): El top de clientes con más pérdida no
+-- refleja "malos clientes" sino ventas individuales catastróficas:
+-- Cindy Stewart acumula -$6.9K en solo 2 transacciones.
+-- La autopsia de las 10 peores ventas lo confirma: TODAS tienen
+-- descuentos del 40% al 80%, muy por encima del umbral del 30%
+-- identificado el día anterior. 9 de 10 son Machines o Binders,
+-- que ahora tienen nombre: la impresora 3D Cubify aparece 3 veces.
+-- El caso extremo: una Cubify de ~$15.000 de lista vendida a $4.500
+-- (70% off) generó -$6.599 en una sola transacción.
+-- Dos mecanismos de pérdida, misma causa: Binders pierde por goteo
+-- (cientos de ventas chicas con descuento alto) y Machines por
+-- hemorragia (pocas ventas de ticket alto con descuentos extremos).
+-- Pendiente: ¿qué % de la pérdida total concentra cada región y
+-- subcategoría? (window functions)
+
+-- Consigna 4: ¿Qué porcentaje de la pérdida total aporta cada región?
+
+SELECT region,
+       COUNT(*) AS ventas_totales,
+       SUM(profit) AS perdidas_totales,
+       ROUND( SUM(profit) / SUM(SUM(profit)) OVER () * 100, 1) AS porcentaje_del_total
+FROM ventas_raw
+WHERE profit < 0
+GROUP BY region
+ORDER BY perdidas_totales ASC;
+
+-- Hallazgo: El 68% de las pérdidas se concentra en dos regiones:
+-- Central (36,1%) y East (31,8%). South y West aportan ~15% cada una.
+-- Recomendación: cualquier corrección de la política de descuentos
+-- debería priorizar Central y East: ataca dos tercios del problema.
+
