@@ -1,0 +1,68 @@
+-- ============================
+--  Estacionalidad del negocio.
+-- ============================
+
+SELECT COUNT(DISTINCT order_id) AS ordenes,
+	EXTRACT(MONTH FROM order_date) AS mes,
+	SUM(sales) AS facturacion,
+	SUM(profit) AS ganancia
+FROM ventas_raw
+GROUP BY mes
+ORDER BY ganancia DESC;
+
+-- =================
+-- Linea de tiempo:
+-- =================
+
+SELECT COUNT(DISTINCT order_id) AS ordenes,
+	TO_CHAR(order_date, 'YYYY-MM') AS mes,
+	SUM(sales) AS facturacion,
+	SUM(profit) AS ganancia
+FROM ventas_raw
+GROUP BY mes
+ORDER BY mes;
+
+
+-- Hallazgo Estacionalidad y línea de tiempo
+-- Estacionalidad: los meses que más facturan son Noviembre ($352K),
+-- Diciembre ($325K) y Septiembre ($307K). El mejor momento de la
+-- empresa es el último trimestre del año, probablemente por la
+-- temporada de fiestas y el cierre fiscal.
+-- Febrero ($59.7K) factura 6 veces menos que Noviembre. Enero y
+-- Febrero son el desierto del negocio.
+-- Hipótesis: Noviembre factura más que Diciembre ($352K vs $325K)
+-- pero gana menos ($35.4K vs $43.4K). Puede deberse a los descuentos
+-- de eventos como el Black Friday.
+--
+-- Línea de tiempo (noviembres 2014-2017): la facturación estuvo
+-- estancada tres años (~$76-79K) y saltó +49% en 2017 ($118K).
+-- Pero la ganancia no acompañó: 2015 fue el pico ($12.5K), 2016 fue
+-- una anomalía ($4K ganando con la misma facturación de siempre) y
+-- 2017, pese al salto de ventas, ganó $9.7K — menos que 2015.
+-- El margen de noviembre cayó de ~16% (2015) a ~8% (2017): la empresa
+-- vende más pero gana la mitad por cada dólar vendido.
+-- Hipótesis: expansión a base de descuentos agresivos (consistente
+-- con el umbral del 30% y el caso Black Friday).
+
+-- ====================
+--  Podio de clientes:
+-- ====================
+
+SELECT RANK() OVER (ORDER BY SUM(profit) DESC) AS puesto,
+	customer_id,
+	customer_name,
+	SUM(profit) AS ganancia_total,
+	COUNT(DISTINCT order_id) AS cantidad_ordenes
+FROM ventas_raw
+GROUP BY customer_id, customer_name
+ORDER BY ganancia_total DESC
+LIMIT 10;
+
+-- Hallazgo: En el podio nos encontramos con Tamara Chand, una clienta
+-- que aportó $8.981 de ganancia en solo 5 órdenes (casi $1.800 por
+-- orden). Una clienta que vale mucho, al igual que Raymond Buch y
+-- Sanjit Chand, que completan el podio.
+-- No aparece ninguno de los clientes que anteriormente descubrimos
+-- que causaban pérdidas: héroes y villanos son grupos separados,
+-- lo cual refuerza la conclusión del caso: no hay malos clientes,
+-- hay ventas mal hechas.
