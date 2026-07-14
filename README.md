@@ -51,7 +51,7 @@ https://www.kaggle.com/datasets/vivek468/superstore-dataset-final
 
 ## 🚧 Próximos pasos
 
-- [ ] Análisis de clientes y regiones que concentran las ventas con pérdida
+- [x] Análisis de clientes y regiones que concentran las ventas con pérdida
 - [ ] Normalización del modelo (tablas de productos, clientes y ventas)
 - [ ] Réplica del análisis en Python/Pandas
 - [ ] Dashboard ejecutivo en Power BI
